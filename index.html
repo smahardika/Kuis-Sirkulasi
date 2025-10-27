@@ -194,7 +194,7 @@ const questions = [
 
   // 9 Sphygmomanometer systole question
   { type:'mcq',
-    q:'Hasil tekanan darah 120/80 mmHg. Nilai pertama (120) menunjukkan tekanan saat jantung berkontraksi (sistole). Proses yang terjadi saat tekanan sistole adalah …',
+    q:'Hasil tekanan darah 120/80 mmHg. Nilai pertama (120) menunjukkan tekanan saat jantung berkontraksi,sedangkan nilai kedua (80) menunjukkan tekanan saat jantung relaksasi. Proses yang terjadi saat tekanan sistole pada jantung adalah …',
     options:[
       'Keluarnya darah dari bilik jantung ke seluruh tubuh',
       'Masuknya darah ke bilik jantung dari serambi',
@@ -214,7 +214,7 @@ const questions = [
 
   // 11 blood pressure after activity
   { type:'mcq',
-    q:'Berdasarkan tabel tekanan darah sebelum dan setelah naik tangga, apa hubungan aktivitas fisik dan perubahan tekanan darah?',
+    q:'Berdasarkan pengamatan, saat nisa istirahat tekanan darahnya 110/70 mmHg, sedangkan setelah naik tangga menjadi 135/85 mmHg, saat Arif istirahat tekanan darahnya 120/80 mmHg, setelah naik tangga menjadi 140/90 mmHg. Tekanan darah sebelum dan setelah naik tangga, apa hubungan aktivitas fisik dan perubahan tekanan darah?',
     options:[
       'Aktivitas fisik menurunkan tekanan darah karena tubuh kehilangan cairan',
       'Aktivitas fisik meningkatkan tekanan darah karena jantung memompa darah lebih kuat untuk memenuhi kebutuhan oksigen',
@@ -239,27 +239,27 @@ const questions = [
     explain:'Aktivitas → metabolisme ↑ → produksi CO₂ & panas ↑ → pernapasan ↑ untuk mengeluarkan CO₂ dan pendinginan tubuh.' },
 
   // 13-17 Rafi lab as separate TF statements (5)
-  { type:'tf', q:'(Rafi) Nilai hemoglobin dan eritrosit di atas nilai rujukan, menandakan kemungkinan mengalami dehidrasi atau polisitemia.', options:['Benar','Salah'], answer:0,
+  { type:'tf', q:'Hasil pemeriksaan Rafi menunjukkan hemoglobinnya 16,5 g/dL, normalnya 11-15,6 g/dL, sedangkan eritrositnya menunjukkan 6,2 10^6/uL, normalnya 3,7-5,8 10^6/uL. Nilai hemoglobin dan eritrosit Rafi di atas nilai rujukan, menandakan kemungkinan mengalami dehidrasi atau polisitemia.', options:['Benar','Salah'], answer:0,
     explain:'Hb & eritrosit tinggi bisa terjadi karena polisitemia atau dehidrasi relatif (volume plasma turun).'},
-  { type:'tf', q:'(Rafi) Jumlah leukosit dalam batas normal, sehingga tidak ada tanda-tanda infeksi.', options:['Benar','Salah'], answer:0,
+  { type:'tf', q:'Hasil pemeriksaan Rafi menunjukkan leukositnya 7.000/uL, normalnya 4.500-11.000/uL. Artinya jumlah leukosit dalam batas normal, sehingga tidak ada tanda-tanda infeksi.', options:['Benar','Salah'], answer:0,
     explain:'Leukosit 7000 berada dalam rentang normal sehingga tidak mengindikasikan infeksi akut.'},
-  { type:'tf', q:'(Rafi) Jumlah trombosit di bawah normal, menunjukkan gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
+  { type:'tf', q:'Hasil pemeriksaan Rafi menunjukkan trombosit 200.000/uL, normalnya 154.000-442.000/uL. Artinya jumlah trombosit di bawah normal, menunjukkan gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
     explain:'Trombosit Rafi = 200.000 berada dalam rentang normal 154.000–442.000.'},
-  { type:'tf', q:'(Rafi) Kadar hemoglobin tinggi menyebabkan darah menjadi lebih kental dan meningkatkan risiko tekanan darah tinggi.', options:['Benar','Salah'], answer:0,
+  { type:'tf', q:'Hasil pemeriksaan Rafi menunjukkan heoglobinnya 16,5 g/dL, normalnya 11-15,6 g/dL. Kadar hemoglobin tinggi menyebabkan darah menjadi lebih kental dan meningkatkan risiko tekanan darah tinggi.', options:['Benar','Salah'], answer:0,
     explain:'Hb tinggi dapat meningkatkan viskositas darah, berpotensi memengaruhi tekanan darah.'},
-  { type:'tf', q:'(Rafi) Nilai eritrosit yang tinggi menandakan tubuh Rafi kekurangan zat besi.', options:['Benar','Salah'], answer:1,
+  { type:'tf', q:'Hasil pemeriksaan Rafi eritrositnya menunjukkan 6,2 10^6/uL, normalnya 3,7-5,8 10^6/uL. Nilai eritrosit yang tinggi menandakan tubuh Rafi kekurangan zat besi.', options:['Benar','Salah'], answer:1,
     explain:'Eritrosit tinggi biasanya bukan tanda defisiensi zat besi; defisiensi biasanya menurunkan eritrosit.'},
 
   // 18-22 Tiara lab statements TF (5)
-  { type:'tf', q:'(Tiara) Kadar hemoglobin dan eritrosit di bawah nilai rujukan, mengindikasikan anemia.', options:['Benar','Salah'], answer:0,
+  { type:'tf', q:'Hasil pemeriksaan Tiara menunjukkan hemoglobinnya 10,2 g/dL, normalnya 11-15,6 g/dL, Kadar hemoglobin dan eritrosit di bawah nilai rujukan, mengindikasikan anemia.', options:['Benar','Salah'], answer:0,
     explain:'Hb 10.2 dan eritrosit 3.5 di bawah normal → indikasi anemia.'},
-  { type:'tf', q:'(Tiara) Jumlah leukosit meningkat, menandakan adanya infeksi dalam tubuh.', options:['Benar','Salah'], answer:0,
+  { type:'tf', q:'Hasil pemeriksaan Tiara menunjukkan leukositnya 12.500/uL, normalnya 4.500-11.000/uL. Artinya jumlah leukosit meningkat, menandakan adanya infeksi dalam tubuh.', options:['Benar','Salah'], answer:0,
     explain:'Leukosit 12.500 melebihi rujukan -> kemungkinan ada proses infeksi atau peradangan.'},
-  { type:'tf', q:'(Tiara) Trombosit Tiara di bawah normal, menunjukkan gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
+  { type:'tf', q:'Hasil pemeriksaan Tiara menunjukkan trombosit 200.000/uL, normalnya 154.000-442.000/uL. Trombosit Tiara di bawah normal, menunjukkan gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
     explain:'Trombosit 250.000 berada dalam rentang normal -> bukan rendah.'},
-  { type:'tf', q:'(Tiara) Hasil pemeriksaan menunjukkan tubuh Tiara kekurangan oksigen karena rendahnya hemoglobin.', options:['Benar','Salah'], answer:0,
+  { type:'tf', q:'Hasil pemeriksaan Tiara menunjukkan hemoglobinnya 10,2 g/dL, normalnya 11-15,6 g/dL. Hasil pemeriksaan menunjukkan tubuh Tiara kekurangan oksigen karena rendahnya hemoglobin.', options:['Benar','Salah'], answer:0,
     explain:'Hemoglobin rendah mengurangi kapasitas pengangkutan oksigen.'},
-  { type:'tf', q:'(Tiara) Keseluruhan hasil menunjukkan Tiara kemungkinan menderita diabetes.', options:['Benar','Salah'], answer:1,
+  { type:'tf', q:'Jika hemoglobin normal, eritrosit dibawah nilai rujukan, leukosit diatas nilai rujukan, dan trombositnya normal. Keseluruhan hasil menunjukkan Tiara kemungkinan menderita diabetes.', options:['Benar','Salah'], answer:1,
     explain:'Data darah yang disajikan tidak cukup untuk mendiagnosis diabetes.'},
 
   // 23-25 Hypertension T/F (3)
@@ -509,4 +509,5 @@ renderQuestion(0);
 </script>
 </body>
 </html>
+
 
