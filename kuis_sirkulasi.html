@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kuis Interaktif — Bab Sirkulasi (Lengkap)</title>
+<style>
+  :root{
+    --bg:#f7fff7;
+    --card:#ffffff;
+    --muted:#5b6b55;
+    --accent:#2e7d32;
+    --accent-2:#66bb6a;
+    --border:#dfeede;
+    --radius:12px;
+    --maxw:900px;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  }
+  body{
+    margin:0;
+    background: linear-gradient(180deg,var(--bg),#eef9ee 60%);
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    min-height:100vh;
+  }
+  .wrap{
+    width:100%;
+    max-width:var(--maxw);
+  }
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:20px;
+    box-shadow: 0 8px 30px rgba(20,60,30,0.06);
+    border:1px solid var(--border);
+  }
+  header h1{
+    margin:0 0 6px 0;
+    color:var(--accent);
+    font-size:20px;
+  }
+  header p{ margin:0 0 12px 0; color:var(--muted); font-size:0.95rem; }
+
+  .progress{
+    height:10px;
+    background:#f0f7f0;
+    border-radius:999px;
+    overflow:hidden;
+    margin:12px 0;
+    border:1px solid #e6f1e6;
+  }
+  .progress > i{
+    display:block;
+    height:100%;
+    background:linear-gradient(90deg,var(--accent-2),#4caf50);
+    width:0%;
+    transition:width .35s ease;
+  }
+
+  .qbox{ margin:12px 0 8px 0; }
+  .qnum{ font-weight:700; color:#2e7d32; font-size:0.95rem; }
+  .qtext{ font-size:1.05rem; margin:8px 0 14px 0; }
+
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .opt{
+    border:1px solid var(--border);
+    padding:10px 12px;
+    border-radius:10px;
+    background:#fbfffB;
+    cursor:pointer;
+    transition: all .12s ease;
+    user-select:none;
+  }
+  .opt:hover{ transform:translateY(-2px); box-shadow:0 8px 18px rgba(40,80,40,0.06); }
+  .opt.selected{ border-color:var(--accent-2); background: #f1fff1; }
+  .opt.correct{ border-color:#2e7d32; background:#e8f6e8; }
+  .opt.wrong{ border-color:#d9534f; background:#fff5f5; }
+
+  .controls{ display:flex; gap:10px; justify-content:space-between; align-items:center; margin-top:14px; }
+  .leftmeta{ color:var(--muted); font-size:0.92rem; }
+  button.btn{
+    background:var(--accent);
+    color:white;
+    padding:8px 14px;
+    border-radius:10px;
+    border:0;
+    cursor:pointer;
+    font-weight:600;
+  }
+  button.btn[disabled]{ opacity:0.45; cursor:default; filter:grayscale(.15); }
+
+  .explain{
+    margin-top:12px;
+    padding:12px;
+    border-radius:10px;
+    background:#f7fff7;
+    border:1px dashed #d6ead6;
+    color:var(--muted);
+    display:none;
+  }
+  .explain.show{ display:block; }
+
+  /* result */
+  .result{ text-align:center; padding:18px; }
+  .score{ font-size:2.4rem; color:var(--accent); margin:6px 0; }
+  .review-list{ margin-top:12px; max-height:360px; overflow:auto; padding-right:8px; }
+  .rev-item{ border-bottom:1px dashed #ebf3eb; padding:10px 0; }
+  .correct-tag{ color:#2e7d32; font-weight:700; margin-left:8px; }
+  .wrong-tag{ color:#d9534f; font-weight:700; margin-left:8px; }
+
+  footer{ margin-top:12px; text-align:center; color:var(--muted); font-size:0.85rem; }
+  @media (max-width:620px){
+    .qtext{ font-size:1rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="quizCard">
+      <header>
+        <h1>Kuis Interaktif — Bab Sirkulasi (Lengkap)</h1>
+        <p>Semua soal diproses dari dokumen latihanmu. Jawab tiap soal, klik <strong>Submit</strong> untuk melihat pembahasan lalu lanjut ke soal berikutnya dengan <strong>Next</strong>.</p>
+      </header>
+
+      <div class="progress" aria-hidden="true"><i id="progBar"></i></div>
+
+      <div id="content">
+        <!-- question area injected here -->
+      </div>
+
+      <div class="controls" id="controls" style="display:none;">
+        <div class="leftmeta" id="metaText">Soal 1 dari 1</div>
+        <div>
+          <button class="btn" id="submitBtn" disabled>Submit</button>
+          <button class="btn" id="nextBtn" style="display:none;">Next</button>
+        </div>
+      </div>
+
+      <div id="resultArea" style="display:none;" class="result"></div>
+
+      <footer>
+        <div style="font-size:0.95rem;">🌿 Created for classroom use — Peet-style learning</div>
+      </footer>
+    </div>
+  </div>
+
+<script>
+/* ====== QUESTION SET (extracted & converted from your doc) ======
+   Each item: {type: 'mcq'|'tf', q:'', options:[], answer: index (0-based), explain: '' }
+   For TF we use options ['Benar','Salah'].
+*/
+const questions = [
+  // 1
+  { type:'mcq',
+    q:'Sistem peredaran darah manusia berfungsi mengangkut oksigen ke seluruh tubuh melalui pembuluh darah tertentu. Apabila pembuluh darah ini mengalami penyumbatan di bagian koroner, organ yang pertama kali terdampak adalah …',
+    options:['Vena cava','Arteri pulmonalis','Aorta','Vena pulmonalis','Arteri renalis'],
+    answer:2,
+    explain:'Pembuluh koroner adalah cabang dari <strong>aorta</strong> yang mensuplai darah ke otot jantung. Jika aliran koroner tersumbat, jantung (ototnya) kekurangan oksigen.' },
+
+  // Table true/false A-E converted to separate TF questions (2-6)
+  { type:'tf', q:'Atrium kiri menerima darah kaya oksigen dari paru-paru.', options:['Benar','Salah'], answer:0,
+    explain:'Vena pulmonalis membawa darah kaya oksigen dari paru-paru ke atrium kiri.' },
+  { type:'tf', q:'Ventrikel kanan memompa darah menuju paru-paru melalui arteri pulmonalis.', options:['Benar','Salah'], answer:0,
+    explain:'Ventrikel kanan memompa darah miskin oksigen ke paru melalui arteri pulmonalis.' },
+  { type:'tf', q:'Aorta membawa darah miskin oksigen ke seluruh tubuh.', options:['Benar','Salah'], answer:1,
+    explain:'Aorta membawa darah <em>kaya</em> oksigen ke seluruh tubuh; pembuluh yang membawa darah miskin oksigen ke paru adalah vena/arteri pulmonalis tergantung arah.' },
+  { type:'tf', q:'Vena pulmonalis membawa darah kaya oksigen ke jantung.', options:['Benar','Salah'], answer:0,
+    explain:'Vena pulmonalis membawa darah dari paru ke atrium kiri; darah ini kaya oksigen.' },
+  { type:'tf', q:'Katup trikuspid mencegah aliran balik dari ventrikel kiri ke atrium kiri.', options:['Benar','Salah'], answer:1,
+    explain:'Katup trikuspid berada di sisi kanan jantung (antara atrium kanan dan ventrikel kanan), bukan ventrikel kiri.' },
+
+  // 7 multiple choice with statements 1-5: correct 1,4,5 -> option index 2 (C)
+  { type:'mcq',
+    q:'Perhatikan pernyataan berikut: (1) Aorta menyalurkan darah kaya oksigen ke seluruh tubuh. (2) Vena pulmonalis membawa darah miskin oksigen dari paru ke jantung. (3) Arteri pulmonalis membawa darah kaya oksigen dari jantung ke paru. (4) Ventrikel kiri dinding otot paling tebal karena memompa seluruh tubuh. (5) Ventrikel kanan memompa darah ke paru. Pernyataan yang benar adalah …',
+    options:['1, 2, dan 3','1, 3, dan 4','1, 4, dan 5','2, 3, dan 5','3, 4, dan 5'],
+    answer:2,
+    explain:'Pernyataan benar: 1 (benar), 4 (benar), 5 (benar). Pernyataan 2 dan 3 salah karena vena pulmonalis membawa darah kaya oksigen; arteri pulmonalis membawa darah miskin oksigen ke paru.' },
+
+  // 8 case coronary blockage -> choose best analysis (B in doc)
+  { type:'mcq',
+    q:'Kasus: penyumbatan pada arteri koroner kiri yang menghambat aliran darah menuju otot jantung. Pernyataan analisis yang paling tepat adalah …',
+    options:[
+      'Darah dari paru-paru tidak dapat menuju atrium kiri sehingga gangguan pada sirkulasi paru.',
+      'Aliran darah kaya oksigen dari pembuluh koroner ke otot jantung terganggu sehingga jaringan jantung kekurangan oksigen.',
+      'Aliran darah miskin oksigen dari seluruh tubuh ke paru-paru terhambat.',
+      'Darah dari atrium kanan tidak dapat masuk ke ventrikel kanan.',
+      'Aliran darah dari aorta ke paru-paru terganggu.'
+    ],
+    answer:1,
+    explain:'Penyumbatan arteri koroner mengurangi suplai oksigen ke miokardium → iskemia/nekrosis otot jantung jika tidak ditangani.' },
+
+  // 9 Sphygmomanometer systole question
+  { type:'mcq',
+    q:'Hasil tekanan darah 120/80 mmHg. Nilai pertama (120) menunjukkan tekanan saat jantung berkontraksi (sistole). Proses yang terjadi saat tekanan sistole adalah …',
+    options:[
+      'Keluarnya darah dari bilik jantung ke seluruh tubuh',
+      'Masuknya darah ke bilik jantung dari serambi',
+      'Keluarnya darah dari jantung ke paru-paru',
+      'Darah masuk ke serambi jantung dari seluruh tubuh',
+      'Darah keluar dari serambi jantung ke paru-paru'
+    ],
+    answer:0,
+    explain:'Sistole ventrikel adalah fase ketika ventrikel berkontraksi dan memompa darah keluar ke aorta (ke seluruh tubuh) dan arteri pulmonalis (ke paru).' },
+
+  // 10 diastolic dysfunction
+  { type:'mcq',
+    q:'Pasien mengalami diastolic dysfunction sehingga darah sulit masuk ke bilik. Proses yang terganggu pada fase diastole adalah …',
+    options:['Pengisian darah dari serambi ke bilik jantung','Pemompaan darah dari bilik ke aorta','Aliran darah dari paru ke serambi kiri','Penutupan katup semilunaris','Pembukaan katup trikuspid saat kontraksi'],
+    answer:0,
+    explain:'Diastole adalah fase relaksasi jantung, ketika bilik terisi darah dari serambi; jika relaksasi terganggu, pengisian bilik berkurang.' },
+
+  // 11 blood pressure after activity
+  { type:'mcq',
+    q:'Berdasarkan tabel tekanan darah sebelum dan setelah naik tangga, apa hubungan aktivitas fisik dan perubahan tekanan darah?',
+    options:[
+      'Aktivitas fisik menurunkan tekanan darah karena tubuh kehilangan cairan',
+      'Aktivitas fisik meningkatkan tekanan darah karena jantung memompa darah lebih kuat untuk memenuhi kebutuhan oksigen',
+      'Aktivitas fisik tidak berpengaruh karena sistem saraf menjaga stabilitas',
+      'Tekanan darah menurun karena pembuluh darah melebar saat beraktivitas',
+      'Aktivitas fisik menyebabkan tekanan darah tetap konstan tetapi frekuensi nadi meningkat'
+    ],
+    answer:1,
+    explain:'Aktivitas fisik meningkatkan kebutuhan oksigen → jantung memompa lebih kuat → tekanan darah dan frekuensi nadi meningkat.' },
+
+  // 12 respiration and temp after running
+  { type:'mcq',
+    q:'Perubahan frekuensi pernapasan dan suhu tubuh setelah berlari: penjelasan paling tepat adalah …',
+    options:[
+      'Saat berlari, tubuh menurunkan suhu dengan memperlambat pernapasan',
+      'Kenaikan suhu dan frekuensi pernapasan karena peningkatan metabolisme yang menghasilkan panas dan CO₂',
+      'Frekuensi pernapasan meningkat karena tubuh kekurangan air',
+      'Suhu tubuh meningkat karena udara panas yang dihirup saat berlari',
+      'Tidak ada hubungan antara frekuensi pernapasan dan suhu tubuh'
+    ],
+    answer:1,
+    explain:'Aktivitas → metabolisme ↑ → produksi CO₂ & panas ↑ → pernapasan ↑ untuk mengeluarkan CO₂ dan pendinginan tubuh.' },
+
+  // 13-17 Rafi lab as separate TF statements (5)
+  { type:'tf', q:'(Rafi) Nilai hemoglobin dan eritrosit di atas nilai rujukan, menandakan kemungkinan mengalami dehidrasi atau polisitemia.', options:['Benar','Salah'], answer:0,
+    explain:'Hb & eritrosit tinggi bisa terjadi karena polisitemia atau dehidrasi relatif (volume plasma turun).'},
+  { type:'tf', q:'(Rafi) Jumlah leukosit dalam batas normal, sehingga tidak ada tanda-tanda infeksi.', options:['Benar','Salah'], answer:0,
+    explain:'Leukosit 7000 berada dalam rentang normal sehingga tidak mengindikasikan infeksi akut.'},
+  { type:'tf', q:'(Rafi) Jumlah trombosit di bawah normal, menunjukkan gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
+    explain:'Trombosit Rafi = 200.000 berada dalam rentang normal 154.000–442.000.'},
+  { type:'tf', q:'(Rafi) Kadar hemoglobin tinggi menyebabkan darah menjadi lebih kental dan meningkatkan risiko tekanan darah tinggi.', options:['Benar','Salah'], answer:0,
+    explain:'Hb tinggi dapat meningkatkan viskositas darah, berpotensi memengaruhi tekanan darah.'},
+  { type:'tf', q:'(Rafi) Nilai eritrosit yang tinggi menandakan tubuh Rafi kekurangan zat besi.', options:['Benar','Salah'], answer:1,
+    explain:'Eritrosit tinggi biasanya bukan tanda defisiensi zat besi; defisiensi biasanya menurunkan eritrosit.'},
+
+  // 18-22 Tiara lab statements TF (5)
+  { type:'tf', q:'(Tiara) Kadar hemoglobin dan eritrosit di bawah nilai rujukan, mengindikasikan anemia.', options:['Benar','Salah'], answer:0,
+    explain:'Hb 10.2 dan eritrosit 3.5 di bawah normal → indikasi anemia.'},
+  { type:'tf', q:'(Tiara) Jumlah leukosit meningkat, menandakan adanya infeksi dalam tubuh.', options:['Benar','Salah'], answer:0,
+    explain:'Leukosit 12.500 melebihi rujukan -> kemungkinan ada proses infeksi atau peradangan.'},
+  { type:'tf', q:'(Tiara) Trombosit Tiara di bawah normal, menunjukkan gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
+    explain:'Trombosit 250.000 berada dalam rentang normal -> bukan rendah.'},
+  { type:'tf', q:'(Tiara) Hasil pemeriksaan menunjukkan tubuh Tiara kekurangan oksigen karena rendahnya hemoglobin.', options:['Benar','Salah'], answer:0,
+    explain:'Hemoglobin rendah mengurangi kapasitas pengangkutan oksigen.'},
+  { type:'tf', q:'(Tiara) Keseluruhan hasil menunjukkan Tiara kemungkinan menderita diabetes.', options:['Benar','Salah'], answer:1,
+    explain:'Data darah yang disajikan tidak cukup untuk mendiagnosis diabetes.'},
+
+  // 23-25 Hypertension T/F (3)
+  { type:'tf', q:'Hipertensi dapat menyebabkan pembuluh darah arteri menjadi kaku dan berisiko pecah.', options:['Benar','Salah'], answer:0,
+    explain:'Hipertensi kronis dapat menyebabkan arteriosklerosis dan risiko pecah/aneurisma.'},
+  { type:'tf', q:'Konsumsi makanan tinggi garam menyebabkan volume darah meningkat sehingga tekanan darah naik.', options:['Benar','Salah'], answer:0,
+    explain:'Garam menyebabkan retensi natrium & air → volume darah ↑ → tekanan darah ↑ pada beberapa orang.'},
+  { type:'tf', q:'Seseorang dengan hipertensi sebaiknya sering berolahraga intensitas tinggi setiap hari.', options:['Benar','Salah'], answer:1,
+    explain:'Olahraga dianjurkan, tetapi intensitas tinggi setiap hari tidak selalu tepat; program seimbang dengan anjuran medis lebih aman.'},
+
+  // 26-28 transfusion TF (3)
+  { type:'tf', q:'Pasien golongan darah A⁺ dapat menerima darah dari pendonor bergolongan O⁺.', options:['Benar','Salah'], answer:0,
+    explain:'O+ (tanpa antigen A/B) bisa kompatibel untuk A+; perhatian pada Rh status diperlukan; umumnya O+ bisa diterima oleh A+.'},
+  { type:'tf', q:'Golongan darah AB⁺ tidak cocok untuk didonorkan kepada pasien bergolongan A⁺.', options:['Benar','Salah'], answer:0,
+    explain:'AB+ mengandung antigen A dan B sehingga bisa memicu reaksi bila didonorkan ke A+.'},
+  { type:'tf', q:'Golongan darah O⁺ disebut donor universal karena bisa mendonorkan darah ke semua golongan darah.', options:['Benar','Salah'], answer:1,
+    explain:'O⁻ lebih mendekati donor universal; O⁺ tidak cocok ke penerima Rh-.'},
+
+  // 29-31 low hb statements TF (3)
+  { type:'tf', q:'Kadar hemoglobin rendah menandakan kemampuan darah membawa oksigen menurun.', options:['Benar','Salah'], answer:0,
+    explain:'Hemoglobin mengikat oksigen; jika rendah => kapasitas pengangkutan oksigen turun.'},
+  { type:'tf', q:'Kondisi tersebut menunjukkan adanya gangguan pembekuan darah.', options:['Benar','Salah'], answer:1,
+    explain:'Hemoglobin rendah terkait anemia, tidak langsung menunjukkan gangguan pembekuan.'},
+  { type:'tf', q:'Asupan zat besi yang cukup dapat membantu meningkatkan kadar hemoglobin.', options:['Benar','Salah'], answer:0,
+    explain:'Bila anemia disebabkan defisiensi besi, suplementasi zat besi membantu meningkatkan Hb.'},
+
+  // 32-34 valve regurg TF (3)
+  { type:'tf', q:'Regurgitasi menyebabkan efisiensi pemompaan darah oleh jantung menurun.', options:['Benar','Salah'], answer:0,
+    explain:'Aliran balik mengurangi volume bersih yang dipompa keluar sehingga efisiensi menurun.'},
+  { type:'tf', q:'Gangguan katup jantung hanya memengaruhi sistem pernapasan.', options:['Benar','Salah'], answer:1,
+    explain:'Gangguan katup memengaruhi sirkulasi sistem kardiovaskular, bukan hanya sistem pernapasan.'},
+  { type:'tf', q:'Penderita gangguan katup jantung dapat mengalami sesak napas karena distribusi oksigen ke jaringan berkurang.', options:['Benar','Salah'], answer:0,
+    explain:'Gangguan aliran darah bisa menurunkan suplai oksigen ke jaringan, menyebabkan sesak napas.'},
+
+  // 35-37 artery/vein TF (3)
+  { type:'tf', q:'Arteri membawa darah kaya oksigen ke seluruh tubuh, kecuali arteri pulmonalis.', options:['Benar','Salah'], answer:0,
+    explain:'Arteri umumnya membawa darah kaya oksigen; pengecualian arteri pulmonalis membawa darah miskin oksigen ke paru.'},
+  { type:'tf', q:'Dinding vena lebih tebal daripada arteri untuk menahan tekanan darah tinggi.', options:['Benar','Salah'], answer:1,
+    explain:'Dinding arteri lebih tebal karena harus menahan tekanan yang lebih tinggi dari jantung.'},
+  { type:'tf', q:'Vena memiliki katup untuk mencegah aliran balik darah menuju jantung.', options:['Benar','Salah'], answer:0,
+    explain:'Katup vena membantu mencegah aliran balik, terutama di ekstremitas.'}
+]; /* end questions array */
+
+/* ====== QUIZ LOGIC ====== */
+let cur = 0;
+let score = 0;
+const total = questions.length;
+const content = document.getElementById('content');
+const controls = document.getElementById('controls');
+const submitBtn = document.getElementById('submitBtn');
+const nextBtn = document.getElementById('nextBtn');
+const metaText = document.getElementById('metaText');
+const progBar = document.getElementById('progBar');
+const resultArea = document.getElementById('resultArea');
+
+function renderQuestion(i){
+  const item = questions[i];
+  content.innerHTML = '';
+  controls.style.display='flex';
+  metaText.textContent = `Soal ${i+1} dari ${total}`;
+  progBar.style.width = `${Math.round((i/total)*100)}%`;
+
+  const qbox = document.createElement('div');
+  qbox.className='qbox';
+  qbox.innerHTML = `<div class="qnum">Soal ${i+1}</div>
+                    <div class="qtext">${item.q}</div>`;
+  const opts = document.createElement('div'); opts.className='options';
+
+  item.options.forEach((opt, idx) => {
+    const d = document.createElement('div');
+    d.className='opt';
+    d.dataset.idx = idx;
+    d.innerHTML = `<span style="margin-right:8px;font-weight:600;">${String.fromCharCode(65+idx)}.</span> ${opt}`;
+    d.addEventListener('click', ()=> selectOption(d));
+    opts.appendChild(d);
+  });
+
+  const explain = document.createElement('div');
+  explain.className='explain';
+  explain.id = 'explain';
+  explain.innerHTML = `<strong>Pembahasan:</strong> ${item.explain}`;
+
+  content.appendChild(qbox);
+  content.appendChild(opts);
+  content.appendChild(explain);
+
+  submitBtn.disabled = true;
+  submitBtn.style.display = 'inline-block';
+  nextBtn.style.display = 'none';
+  nextBtn.disabled = true;
+}
+
+function selectOption(el){
+  // clear previous
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  submitBtn.disabled = false;
+}
+
+submitBtn.addEventListener('click', ()=>{
+  const item = questions[cur];
+  const selected = document.querySelector('.opt.selected');
+  if(!selected) return;
+  const chosen = parseInt(selected.dataset.idx);
+  // show correct/wrong styling
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach(o=>{
+    const idx = parseInt(o.dataset.idx);
+    if(idx === item.answer){
+      o.classList.add('correct');
+    }
+    if(idx === chosen && idx !== item.answer){
+      o.classList.add('wrong');
+    }
+    // disable further clicking
+    o.style.pointerEvents = 'none';
+  });
+
+  // show explain
+  document.getElementById('explain').classList.add('show');
+
+  // update score
+  if(chosen === item.answer) score++;
+
+  // show next button or finish
+  submitBtn.style.display='none';
+  if(cur < total-1){
+    nextBtn.style.display='inline-block';
+    nextBtn.disabled = false;
+  } else {
+    // finish
+    nextBtn.textContent = 'Selesai';
+    nextBtn.style.display='inline-block';
+    nextBtn.disabled = false;
+  }
+});
+
+nextBtn.addEventListener('click', ()=>{
+  if(cur < total-1){
+    cur++;
+    renderQuestion(cur);
+    // reset next button text
+    nextBtn.textContent = 'Next';
+  } else {
+    // show result
+    showResult();
+  }
+});
+
+function showResult(){
+  progBar.style.width = '100%';
+  document.getElementById('content').style.display='none';
+  controls.style.display='none';
+  resultArea.style.display='block';
+  resultArea.innerHTML = `
+    <div class="card" style="padding:18px; border-radius:10px;">
+      <div style="font-size:1.05rem; color:var(--muted);">Kuis selesai!</div>
+      <div class="score">${score} / ${total}</div>
+      <div style="margin-top:6px; color:#333;">Skor: <strong>${Math.round((score/total)*100)}</strong>%</div>
+      <div style="margin-top:12px; text-align:left;">
+        <strong>Review Jawaban:</strong>
+        <div class="review-list" id="reviewList"></div>
+      </div>
+      <div style="margin-top:12px; text-align:center;">
+        <button class="btn" id="restartBtn">Ulangi Kuis</button>
+      </div>
+    </div>
+  `;
+  // build review list
+  const list = document.getElementById('reviewList');
+  questions.forEach((it, idx)=>{
+    // compute what user chose? we don't store choices; we'll compute by re-rendering answers via session memory: we can store choices at submit time.
+  });
+  // We didn't store individual choices—let's store during submit.
+  // Implementation tweak: store choices in array userChoices.
+  // But since we're here, we assume userChoices exists.
+  renderReview();
+  document.getElementById('restartBtn').addEventListener('click', ()=> location.reload());
+}
+
+/* Store user choices */
+const userChoices = [];
+// modify submit handler to push choice at time of submit
+// To do that we replace submitBtn handler (redefine)
+submitBtn.removeEventListener('click', ()=>{});
+submitBtn.addEventListener('click', ()=>{
+  const item = questions[cur];
+  const selected = document.querySelector('.opt.selected');
+  if(!selected) return;
+  const chosen = parseInt(selected.dataset.idx);
+  userChoices[cur] = chosen;
+
+  const opts = document.querySelectorAll('.opt');
+  opts.forEach(o=>{
+    const idx = parseInt(o.dataset.idx);
+    if(idx === item.answer){
+      o.classList.add('correct');
+    }
+    if(idx === chosen && idx !== item.answer){
+      o.classList.add('wrong');
+    }
+    o.style.pointerEvents = 'none';
+  });
+
+  document.getElementById('explain').classList.add('show');
+
+  if(chosen === item.answer) score++;
+
+  submitBtn.style.display='none';
+  if(cur < total-1){
+    nextBtn.style.display='inline-block';
+    nextBtn.disabled = false;
+  } else {
+    nextBtn.textContent = 'Selesai';
+    nextBtn.style.display='inline-block';
+    nextBtn.disabled = false;
+  }
+});
+
+/* render review using userChoices */
+function renderReview(){
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+  questions.forEach((it, idx)=>{
+    const user = (typeof userChoices[idx] === 'number') ? userChoices[idx] : null;
+    const correct = it.answer;
+    const div = document.createElement('div');
+    div.className='rev-item';
+    const qh = document.createElement('div');
+    qh.innerHTML = `<div style="font-weight:700; color:#2e7d32;">Soal ${idx+1}:</div><div style="margin-top:6px;">${it.q}</div>`;
+    const ua = document.createElement('div');
+    ua.style.marginTop='6px';
+    ua.innerHTML = `<div>Jawaban Anda: <strong>${user===null ? '<span style="color:#999">(tidak dijawab)</span>' : (String.fromCharCode(65+user)+'. '+it.options[user])}</strong></div>
+                    <div>Jawaban Benar: <strong>${String.fromCharCode(65+correct)+'. '+it.options[correct]}</strong></div>`;
+    const exp = document.createElement('div');
+    exp.style.marginTop='8px';
+    exp.style.color='var(--muted)';
+    exp.innerHTML = `<strong>Pembahasan:</strong> ${it.explain}`;
+    div.appendChild(qh); div.appendChild(ua); div.appendChild(exp);
+    list.appendChild(div);
+  });
+}
+
+/* initial render */
+renderQuestion(0);
+</script>
+</body>
+</html>
